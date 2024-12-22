@@ -1,0 +1,2136 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Sales API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Autenticar um usuário e gerar um token de acesso",
+                "description": "Este endpoint autentica um usuário com base no email e senha fornecidos. Se as credenciais forem válidas, retorna um token de autenticação e os dados do usuário.",
+                "operationId": "loginUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "device"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Email do usuário",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "description": "Senha do usuário",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "device": {
+                                        "description": "Nome do dispositivo para identificação do token",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Autenticado com sucesso."
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas."
+                    },
+                    "403": {
+                        "description": "Usuário inativo."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Revogar o token de acesso do usuário logado",
+                "description": "Este endpoint permite que o usuário logado revogue o token de acesso associado ao seu dispositivo. Após o logout, o token de autenticação não será mais válido para futuras requisições.",
+                "operationId": "logoutUser",
+                "responses": {
+                    "200": {
+                        "description": "Logout realizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout realizado com sucesso!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autenticado, token de acesso inválido ou ausente"
+                    },
+                    "500": {
+                        "description": "Erro interno no servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Consultar informações do usuário autenticado",
+                "description": "Este endpoint retorna os dados do usuário autenticado com base no token de autenticação fornecido. O usuário deve estar autenticado através de um token Bearer válido para acessar suas informações pessoais.",
+                "operationId": "getAuthenticatedUser",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso - Dados do usuário autenticado retornados com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autenticado - O token de autenticação fornecido é inválido ou ausente."
+                    },
+                    "500": {
+                        "description": "Erro interno no servidor - Falha ao processar a solicitação."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/password/reset": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Alterar a senha do usuário usando um código de redefinição",
+                "description": "Este endpoint permite que o usuário altere sua senha após fornecer um código de redefinição válido enviado por e-mail. O código de redefinição tem um tempo de expiração e pode ser usado uma única vez.",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "code",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "O endereço de e-mail do usuário que solicitou a redefinição de senha.",
+                                        "type": "string",
+                                        "example": "usuario@exemplo.com"
+                                    },
+                                    "code": {
+                                        "description": "O código de redefinição enviado para o e-mail do usuário.",
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "password": {
+                                        "description": "A nova senha que será definida para o usuário.",
+                                        "type": "string",
+                                        "example": "novaSenha123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Senha alterada com sucesso."
+                    },
+                    "400": {
+                        "description": "Falha na requisição, código inválido ou expirado."
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado com o e-mail fornecido."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados, como senha inválida."
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor."
+                    }
+                }
+            }
+        },
+        "/auth/profile": {
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Atualizar perfil do usuário logado",
+                "operationId": "83f74d7688a2059132ea32592d55ef4e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Perfil atualizado com sucesso."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Registrar uma nova conta de usuário",
+                "description": "Este endpoint permite o registro de uma nova conta de usuário. Durante o processo, será criado um novo 'tenant' (empresa) e um usuário associado com a permissão de proprietário (owner).",
+                "operationId": "registerUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "company": {
+                                        "description": "Nome da empresa ou negócio do usuário.",
+                                        "type": "string",
+                                        "example": "Empresa Exemplo"
+                                    },
+                                    "name": {
+                                        "description": "Nome completo do usuário.",
+                                        "type": "string",
+                                        "example": "João Silva"
+                                    },
+                                    "email": {
+                                        "description": "Email único para o usuário, que será utilizado para autenticação.",
+                                        "type": "string",
+                                        "example": "joao@exemplo.com"
+                                    },
+                                    "password": {
+                                        "description": "Senha do usuário, que será usada para autenticação.",
+                                        "type": "string",
+                                        "example": "senha123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Conta de usuário registrada com sucesso. Retorna o recurso do usuário recém-criado."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    },
+                    "500": {
+                        "description": "Erro interno no servidor, não foi possível registrar o usuário."
+                    }
+                }
+            }
+        },
+        "/auth/password/code": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Enviar código de recuperação de senha",
+                "description": "Este endpoint envia um código de recuperação de senha para o e-mail do usuário, caso o e-mail fornecido esteja registrado no sistema. O código gerado é enviado por e-mail e é utilizado para redefinir a senha do usuário.",
+                "operationId": "sendPasswordResetCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "O e-mail do usuário para o qual o código de recuperação de senha será enviado.",
+                                        "type": "string",
+                                        "example": "usuario@exemplo.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código de recuperação enviado com sucesso."
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado com o e-mail fornecido."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados, como e-mail inválido."
+                    },
+                    "500": {
+                        "description": "Erro interno ao enviar o código."
+                    }
+                }
+            }
+        },
+        "/auth/password/verify": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Validar código de recuperação de senha",
+                "description": "Este endpoint verifica se o código de recuperação de senha fornecido pelo usuário é válido e não expirou. O código é comparado com o código armazenado no banco de dados e a validade é verificada com base no tempo de criação do código. Caso o código seja válido e dentro do prazo de validade, o usuário poderá prosseguir com a redefinição da senha.",
+                "operationId": "verifyPasswordResetCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "O e-mail do usuário que solicita a verificação do código de recuperação.",
+                                        "type": "string",
+                                        "example": "usuario@exemplo.com"
+                                    },
+                                    "code": {
+                                        "description": "O código de recuperação enviado para o e-mail do usuário.",
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código validado com sucesso. O usuário pode prosseguir com a redefinição da senha."
+                    },
+                    "400": {
+                        "description": "Falha na requisição. O código é inválido ou expirado."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados, como e-mail ou código mal formatados."
+                    },
+                    "500": {
+                        "description": "Erro interno ao validar o código."
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Listar categorias",
+                "description": "Retorna uma lista de categorias com paginação e filtros opcionais.",
+                "operationId": "13f3d73cc6bc2b49b3ffb9f4812576e7",
+                "parameters": [
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "Quantidade de itens por página.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar categorias pelo nome.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Eletrônicos"
+                        }
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Filtrar por status ativo (true) ou inativo (false).",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de categorias retornada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Criar uma nova categoria",
+                "description": "Armazena uma nova categoria no banco de dados.",
+                "operationId": "7188fdcfb5f38c1d11289a8176a6b558",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "active"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome da categoria.",
+                                        "type": "string",
+                                        "example": "Eletrônicos"
+                                    },
+                                    "active": {
+                                        "description": "Status ativo ou inativo da categoria.",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Categoria criada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/categories/{id}": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Exibir uma categoria",
+                "description": "Retorna os detalhes de uma categoria pelo ID.",
+                "operationId": "e4710fe1b1bdea207fcf2ee451fb44c8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da categoria a ser exibida.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da categoria retornados com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Categoria não encontrada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Atualizar uma categoria",
+                "description": "Atualiza os dados de uma categoria existente.",
+                "operationId": "e383bdb12623dd341af76d873a632ca6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da categoria a ser atualizada.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome da categoria.",
+                                        "type": "string",
+                                        "example": "Eletrônicos"
+                                    },
+                                    "active": {
+                                        "description": "Status ativo ou inativo da categoria.",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Categoria atualizada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Categoria não encontrada."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Deletar uma categoria",
+                "description": "Remove uma categoria pelo ID.",
+                "operationId": "9bd0148f2ed6d14e14d9dbee9ebb8bb1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da categoria a ser deletada.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categoria deletada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/customers": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Listar todos os clientes",
+                "description": "Retorna uma lista paginada de clientes com opções de filtragem por nome, email e status ativo.",
+                "operationId": "1c3b3ed8c6c54d82ad21329ee9e1968a",
+                "parameters": [
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "Quantidade de itens por página.",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar clientes pelo nome",
+                        "schema": {
+                            "type": "string",
+                            "example": "John Doe"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Filtrar clientes pelo email",
+                        "schema": {
+                            "type": "string",
+                            "example": "johndoe@example.com"
+                        }
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Filtrar por status ativo (true) ou inativo (false).",
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de clientes retornada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Criar um novo cliente",
+                "description": "Armazena um novo cliente no banco de dados.",
+                "operationId": "cea56953759e80d463125d20f2c4550a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome do cliente",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "description": "Email do cliente",
+                                        "type": "string",
+                                        "example": "johndoe@example.com"
+                                    },
+                                    "whatsapp": {
+                                        "description": "Número do WhatsApp",
+                                        "type": "string",
+                                        "example": "+5511987654321"
+                                    },
+                                    "address": {
+                                        "description": "Endereço do cliente",
+                                        "type": "string",
+                                        "example": "Rua Exemplo, 123"
+                                    },
+                                    "active": {
+                                        "description": "Status ativo do cliente",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cliente criado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/customers/{id}": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Obter detalhes de um cliente",
+                "description": "Retorna os detalhes de um cliente específico pelo ID.",
+                "operationId": "b223f367f3511ee24c5c62595b523367",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID do cliente",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do cliente retornados com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Atualizar dados de um cliente",
+                "description": "Atualiza os dados de um cliente pelo ID.",
+                "operationId": "5990a2c6cf965a991fbb3e3b7633a2a0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID do cliente",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome do cliente",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "active": {
+                                        "description": "Status ativo do cliente",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Cliente atualizado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Excluir um cliente",
+                "description": "Remove um cliente específico pelo ID.",
+                "operationId": "62b7d8204ce1a6975253136cfd728d7e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID do cliente",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cliente excluído com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Obter todos os recursos",
+                "operationId": "b63ec4394c475fe1a0fdc836e1e1ed99",
+                "parameters": [
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "Quantidade de dados por página.",
+                        "schema": {
+                            "type": "int"
+                        }
+                    },
+                    {
+                        "name": "identify",
+                        "in": "query",
+                        "description": "Filtrar recurso pelo número identificador",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "order_id",
+                        "in": "query",
+                        "description": "Filtrar recurso pelo id do usuário",
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        }
+                    },
+                    {
+                        "name": "customer_id",
+                        "in": "query",
+                        "description": "Filtrar recurso pelo id do cliente",
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        }
+                    },
+                    {
+                        "name": "payment_id",
+                        "in": "query",
+                        "description": "Filtrar recurso pelo id da forma de pagamento",
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de pedidos retornada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Armazenar novo recurso no banco de dados",
+                "operationId": "b9fc36483260b69b444017c291d48cce",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "customer_id": {
+                                        "description": "ID do cliente",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    },
+                                    "payment_id": {
+                                        "description": "ID da forma de pagamento",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    },
+                                    "products": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "product_id": {
+                                                    "description": "ID do produto",
+                                                    "type": "string",
+                                                    "format": "uuid",
+                                                    "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                                },
+                                                "quantity": {
+                                                    "description": "Quantidade do produto",
+                                                    "type": "integer",
+                                                    "minimum": 1,
+                                                    "example": 5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pedido criado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/orders/{id}": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Ver um recurso",
+                "operationId": "c82bf974ea99be4d0ad4491f2e9a3096",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        },
+                        "examples": {
+                            "uuid": {
+                                "summary": "UUID value.",
+                                "value": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do pedido retornados com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Pedido não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Atualizar um recurso no banco de dados",
+                "operationId": "d7cc57fbabd8697bc747523009cd61c6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        },
+                        "examples": {
+                            "uuid": {
+                                "summary": "UUID value.",
+                                "value": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                            }
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Pedido atualizado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Pedido não encontrado."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Deletar recurso",
+                "operationId": "ee5586276ea88d598ecfc084ec534427",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        },
+                        "examples": {
+                            "uuid": {
+                                "summary": "UUID value.",
+                                "value": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pedido removido com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Pedido não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Listar produtos",
+                "description": "Obtém uma lista de produtos com filtros opcionais e paginação.",
+                "operationId": "bf6200af3f7adcfa01a7fef43f443053",
+                "parameters": [
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "Quantidade de itens por página.",
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar produtos pelo nome",
+                        "schema": {
+                            "type": "string",
+                            "example": "Smartphone"
+                        }
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "Filtrar produtos por ID de categoria",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                        }
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Filtrar por status ativo (true) ou inativo (false)",
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de produtos retornada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Criar produto",
+                "description": "Armazena um novo produto no banco de dados.",
+                "operationId": "10a12eb39f3c218e219f9062901ced1d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "category_id",
+                                    "name",
+                                    "price",
+                                    "image"
+                                ],
+                                "properties": {
+                                    "category_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Smartphone"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Descrição do produto."
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1999.99
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Produto criado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Exibir produto",
+                "description": "Retorna os detalhes de um produto específico.",
+                "operationId": "db57cbd991480e5ae650d94da2e67527",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do produto",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do produto retornados com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Produto não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Atualizar produto",
+                "description": "Atualiza os dados de um produto existente.",
+                "operationId": "651a0a2ba03cde00c726bb282ad95ece",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do produto a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "category_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Smartphone"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Descrição do produto."
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1999.99
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Produto atualizado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Produto não encontrado."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Excluir produto",
+                "description": "Remove um produto do banco de dados.",
+                "operationId": "6ef693374ab3b223d71c5d02e2c6bb47",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do produto",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Produto excluído com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Produto não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/resources": {
+            "get": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Listar todos os recursos",
+                "description": "Retorna uma lista de recursos disponíveis no banco de dados.",
+                "operationId": "getAllResources",
+                "responses": {
+                    "200": {
+                        "description": "Lista de recursos com permissões retornadas com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/roles": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Listar papéis",
+                "description": "Retorna uma lista de papéis (roles) com suporte a paginação e filtros opcionais.",
+                "operationId": "e4a0ea20b57f19c5b6d04c7c40f09173",
+                "parameters": [
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "Quantidade de itens por página.",
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar resultados pelo nome do papel.",
+                        "schema": {
+                            "type": "string",
+                            "example": "Admin"
+                        }
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Filtrar por status ativo (true) ou inativo (false).",
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de papéis retornada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Criar um novo papel",
+                "description": "Armazena um novo papel no sistema. É necessário fornecer um nome único e opcionalmente associar permissões.",
+                "operationId": "6224ddd585cdd46a7054e7de33f3854c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome do papel",
+                                        "type": "string",
+                                        "example": "Manager"
+                                    },
+                                    "active": {
+                                        "description": "Status do papel",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "permissions": {
+                                        "description": "Lista de UUIDs das permissões associadas.",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Papel criado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/roles/{id}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Exibir detalhes de um papel",
+                "description": "Retorna informações detalhadas de um papel específico identificado pelo seu UUID.",
+                "operationId": "3122dc977d1062deb54c31ed424af409",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID do papel a ser recuperado.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do papel retornados com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Papel não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Atualizar um papel existente",
+                "description": "Atualiza informações de um papel específico, como nome, status e permissões associadas.",
+                "operationId": "349dad47b79d5a48712423dfc046506b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID do papel a ser atualizado.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome do papel",
+                                        "type": "string",
+                                        "example": "Editor"
+                                    },
+                                    "active": {
+                                        "description": "Status do papel",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "permissions": {
+                                        "description": "Lista de UUIDs das permissões associadas.",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Papel atualizado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Papel não encontrado."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Excluir um papel",
+                "description": "Remove um papel do sistema identificado pelo seu UUID.",
+                "operationId": "9056c9b2c62085b4af3271ecb91c301d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID do papel a ser excluído.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Papel excluído com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Papel não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Listar usuários",
+                "description": "Retorna uma lista de usuários cadastrados, com suporte a paginação e filtros.",
+                "operationId": "dcc6d75003742c424fc8c95bf20ad811",
+                "parameters": [
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "Quantidade de itens por página.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar usuários pelo nome.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Filtrar usuários pelo email.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "john.doe@example.com"
+                        }
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Filtrar por status ativo (true) ou inativo (false).",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuários retornada com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Criar um novo usuário",
+                "description": "Adiciona um novo usuário ao banco de dados.",
+                "operationId": "1932e13e89a3b0a0a1a75242f421b8f5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome do usuário.",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "description": "Email do usuário.",
+                                        "type": "string",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "description": "Senha do usuário.",
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "active": {
+                                        "description": "Status do usuário (ativo ou inativo).",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "roles": {
+                                        "description": "Lista de IDs dos papéis associados ao usuário.",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário criado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Obter um usuário",
+                "description": "Retorna os detalhes de um usuário específico.",
+                "operationId": "fc21138408664b1ddc707c7fb520e1c2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID único do usuário.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do usuário retornados com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Atualizar um usuário",
+                "description": "Atualiza as informações de um usuário existente.",
+                "operationId": "9344f2a75f244b8c62f5cadba56d8076",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID único do usuário.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Nome atualizado do usuário.",
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "email": {
+                                        "description": "Email atualizado do usuário.",
+                                        "type": "string",
+                                        "example": "jane.doe@example.com"
+                                    },
+                                    "active": {
+                                        "description": "Status atualizado do usuário.",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "roles": {
+                                        "description": "Lista de IDs atualizados dos papéis associados ao usuário.",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Usuário atualizado com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "422": {
+                        "description": "Erro de validação nos dados enviados."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Excluir um usuário",
+                "description": "Remove um usuário do banco de dados.",
+                "operationId": "7600bb0110feca273f95f048feef8955",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID único do usuário.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuário removido com sucesso."
+                    },
+                    "401": {
+                        "description": "Não autorizado, usuário não autenticado."
+                    },
+                    "403": {
+                        "description": "Acesso negado, usuário sem permissão."
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Categories",
+            "description": "Categories"
+        },
+        {
+            "name": "Customers",
+            "description": "Customers"
+        },
+        {
+            "name": "Orders",
+            "description": "Orders"
+        },
+        {
+            "name": "Products",
+            "description": "Products"
+        },
+        {
+            "name": "Resources",
+            "description": "Resources"
+        },
+        {
+            "name": "Roles",
+            "description": "Roles"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
+        }
+    ]
+}

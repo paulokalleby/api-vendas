@@ -1,0 +1,624 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Project",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Gerar token de autenticão",
+                "operationId": "22e3905726dd342e825c772ea8acb378",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "device": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "402": {
+                        "description": "Validação de dados"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Revogar token de acesso do usuário logado",
+                "operationId": "86432121f75777a623e8d22ce54b47be",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Consultar usuário autenticado",
+                "operationId": "975a2eebe95c72f232da26e3df07b6de",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/password/reset": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Realizar alteração de senha",
+                "operationId": "c9a37ed7e24bb8c8e5c8afb8e3368cf9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "code": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "400": {
+                        "description": "Falha na requisição"
+                    },
+                    "402": {
+                        "description": "Validação de dados"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            }
+        },
+        "/auth/profile": {
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Atualizar perfil do usuário logado",
+                "operationId": "83f74d7688a2059132ea32592d55ef4e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "402": {
+                        "description": "Validação de dados"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Registrar conta de usuário",
+                "operationId": "405b3491db441a409eaa828dde286aaa",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "device": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/auth/password/code": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Enviar código de recuperação de senha",
+                "operationId": "0ef183242819a285c9a71ae7ea68b4fc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "402": {
+                        "description": "Validação de dados"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    }
+                }
+            }
+        },
+        "/auth/password/verify": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Validar código de recuperação",
+                "operationId": "3a356d4a483c52e43f1f83649f889c5b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "400": {
+                        "description": "Falha na requisição"
+                    },
+                    "402": {
+                        "description": "Validação de dados"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Obter todos os recursos do banco",
+                "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "parameters": [
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "Quantidade de dados por página",
+                        "schema": {
+                            "type": "int"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar usuário pelo nome",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Filtrar usuário pelo email",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Filtrar usuários ativos ou inativos",
+                        "schema": {
+                            "type": "bool"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "500": {
+                        "description": "Erro interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Armazenar novo recurso no banco de dados",
+                "operationId": "a1fce870c566eb5fc0cf3178ec5d2fed",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "roles": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "example": [
+                                            "uuid1",
+                                            "uuid2",
+                                            "uuid3"
+                                        ]
+                                    },
+                                    "cutomer": {
+                                        "type": "boolean"
+                                    },
+                                    "active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "402": {
+                        "description": "Validação de dados"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "500": {
+                        "description": "Erro interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Ver um recurso",
+                "operationId": "910a0c7cf580e1c605648d82a4e57f46",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        },
+                        "examples": {
+                            "uuid": {
+                                "summary": "UUID value.",
+                                "value": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Atualizar um recurso no banco de dados",
+                "operationId": "ddfe232db1870b82493bf8bd25596d37",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        },
+                        "examples": {
+                            "uuid": {
+                                "summary": "UUID value.",
+                                "value": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                            }
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "roles": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "example": [
+                                            "uuid1",
+                                            "uuid2",
+                                            "uuid3"
+                                        ]
+                                    },
+                                    "customer": {
+                                        "type": "boolean"
+                                    },
+                                    "active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Atualizado"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "402": {
+                        "description": "Validação de dados"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Deletar recurso",
+                "operationId": "43dd20becb1f47444e484cbb18ce345c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "char32"
+                        },
+                        "examples": {
+                            "uuid": {
+                                "summary": "UUID value.",
+                                "value": "0006faf6-7a61-426c-9034-579f2cfcfa83"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
+        }
+    ]
+}
